@@ -1,0 +1,28 @@
+on:
+  schedule:
+    # 00:00 / 06:00 / 12:00 UTC = 09:00 / 15:00 / 21:00 KST - 3x/day.
+    # GitHub's cron scheduler is best-effort and can slip a few minutes
+    # under load; that's fine for a leaderboard.
+    - cron: "0 0,6,12 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  update-leaderboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: scripts/leaderboard
+        run: npm install
+
+      - name: Compute and publish leaderboard
+        working-directory: scripts/leaderboard
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node compute-leaderboard.mjs
