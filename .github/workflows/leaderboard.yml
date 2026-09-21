@@ -1,3 +1,5 @@
+name: Update leaderboard
+
 on:
   schedule:
     # 00:00 / 06:00 / 12:00 UTC = 09:00 / 15:00 / 21:00 KST - 3x/day.
