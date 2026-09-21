@@ -1,0 +1,9 @@
+{
+  "name": "pokemon-pet-leaderboard-cron",
+  "private": true,
+  "type": "module",
+  "description": "Recomputes leaderboard_snapshot from the live Supabase tables (via the service role key) and writes the result back - run on a schedule by .github/workflows/leaderboard.yml, not part of the desktop app.",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

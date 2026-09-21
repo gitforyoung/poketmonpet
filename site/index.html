@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>포켓몬 데스크톱 펫 - 리더보드</title>
+<meta name="description" content="포켓몬 데스크톱 펫 플레이어 순위 - 하루 3번 갱신" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --bg-alt: #ffffff;
+    --ink: #22201b;
+    --ink-dim: #6b6558;
+    --line: #e2dccc;
+    --accent: #d4302f;
+    --accent-ink: #ffffff;
+    --gold: #c9962c;
+    --silver: #9aa0a6;
+    --bronze: #b6712f;
+    --shiny: #f5b83d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16140f;
+      --bg-alt: #211e17;
+      --ink: #f1ede2;
+      --ink-dim: #a89f8b;
+      --line: #3a3527;
+      --accent: #ff5a4e;
+      --accent-ink: #1b0f0c;
+      --gold: #e5b64a;
+      --silver: #b9bec4;
+      --bronze: #d18a4c;
+      --shiny: #ffd873;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16140f;
+    --bg-alt: #211e17;
+    --ink: #f1ede2;
+    --ink-dim: #a89f8b;
+    --line: #3a3527;
+    --accent: #ff5a4e;
+    --accent-ink: #1b0f0c;
+    --gold: #e5b64a;
+    --silver: #b9bec4;
+    --bronze: #d18a4c;
+    --shiny: #ffd873;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans KR", system-ui, sans-serif;
+    padding: 0 16px;
+  }
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding-block: 40px 64px;
+  }
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: "Jost", "Noto Sans KR", sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 40px);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--ink-dim);
+    font-size: 14px;
+    margin: 0;
+  }
+  #updated-at {
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin: 4px 0 32px;
+    font-variant-numeric: tabular-nums;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .board {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 18px 8px;
+  }
+  .board.wide { grid-column: 1 / -1; }
+  .board h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .board .desc {
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin: 0 0 14px;
+  }
+  ol.rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  ol.rows li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+  }
+  ol.rows li:first-child { border-top: none; }
+  .rank {
+    width: 22px;
+    flex: none;
+    text-align: center;
+    font-family: "Jost", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink-dim);
+  }
+  .rank.r1 { color: var(--gold); font-size: 16px; }
+  .rank.r2 { color: var(--silver); }
+  .rank.r3 { color: var(--bronze); }
+  .name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .value {
+    flex: none;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .monster-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+  }
+  .monster-row:first-child { border-top: none; }
+  .sprite-box {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .sprite-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .monster-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .monster-info .top-line {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .monster-info .species-line {
+    font-size: 12px;
+    color: var(--ink-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .shiny-mark { color: var(--shiny); }
+  .empty {
+    padding: 20px 0;
+    color: var(--ink-dim);
+    font-size: 13px;
+    text-align: center;
+  }
+  footer {
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    text-align: center;
+  }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🏆 포켓몬 데스크톱 펫 리더보드</h1>
+    <p class="subtitle">하루 3번(09시·15시·21시) 갱신되는 전체 플레이어 순위</p>
+  </header>
+  <p id="updated-at">불러오는 중...</p>
+
+  <div class="grid" id="boards"></div>
+
+  <footer>
+    닉네임은 앱 트레이 메뉴의 "닉네임 설정"에서 등록할 수 있습니다. 닉네임을 등록한 플레이어만 순위에 표시됩니다.
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // Same anon (publishable) key the desktop app itself uses - safe to
+  // embed client-side, every table it can reach is RLS-scoped or, for
+  // leaderboard_snapshot, deliberately public-read-only.
+  const SUPABASE_URL = "https://kxuyzblvgoatceaggtci.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_ilmxm11Af5GKC5GRapslQA_-aPF3wrF";
+
+  const CATEGORIES = [
+    { key: "dex_count", title: "📖 도감 진척도", desc: "잡아본 서로 다른 포켓몬 종의 수", unit: "종" },
+    { key: "total_level", title: "📊 전체 몬스터 레벨 총합", desc: "보유한 모든 몬스터의 레벨 합", unit: "Lv" },
+    { key: "shiny_count", title: "✨ 이로치 컬렉션", desc: "지금까지 잡은 이로치(샤이니) 개체 수", unit: "마리" },
+    { key: "master_balls_earned", title: "🎁 마스터볼 누적 획득", desc: "도감 마일스톤 + 누적 실행시간으로 받은 마스터볼 총합", unit: "개" },
+  ];
+
+  function medalClass(rank) {
+    if (rank === 1) return "r1";
+    if (rank === 2) return "r2";
+    if (rank === 3) return "r3";
+    return "";
+  }
+
+  function spriteUrl(speciesId, isShiny) {
+    const variant = isShiny ? "shiny/" : "";
+    return `https://cdn.jsdelivr.net/gh/PokeAPI/sprites/sprites/pokemon/other/showdown/${variant}${speciesId}.gif`;
+  }
+
+  function renderSimpleBoard(rows, unit) {
+    if (!rows.length) return '<p class="empty">아직 순위 데이터가 없습니다.</p>';
+    const items = rows
+      .map(
+        (r) => `
+        <li>
+          <span class="rank ${medalClass(r.rank)}">${r.rank}</span>
+          <span class="name">${escapeHtml(r.display_name)}</span>
+          <span class="value">${Number(r.value).toLocaleString()} ${unit}</span>
+        </li>`,
+      )
+      .join("");
+    return `<ol class="rows">${items}</ol>`;
+  }
+
+  function renderTopLevelBoard(rows) {
+    if (!rows.length) return '<p class="empty">아직 순위 데이터가 없습니다.</p>';
+    const items = rows
+      .map((r) => {
+        const extra = r.extra || {};
+        const speciesName = extra.species_name_ko || extra.species_name || "?";
+        const monsterName = extra.monster_nickname || speciesName;
+        const shiny = !!extra.is_shiny;
+        const img = extra.species_id
+          ? `<img src="${spriteUrl(extra.species_id, shiny)}" alt="${escapeHtml(speciesName)}" loading="lazy" onerror="this.parentElement.style.display='none'" />`
+          : "";
+        return `
+        <div class="monster-row">
+          <span class="rank ${medalClass(r.rank)}">${r.rank}</span>
+          <div class="sprite-box">${img}</div>
+          <div class="monster-info">
+            <div class="top-line">
+              ${shiny ? '<span class="shiny-mark">✨</span>' : ""}
+              <span>${escapeHtml(monsterName)}</span>
+              <span class="value">Lv.${Number(r.value)}</span>
+            </div>
+            <div class="species-line">${escapeHtml(r.display_name)} · ${escapeHtml(speciesName)}</div>
+          </div>
+        </div>`;
+      })
+      .join("");
+    return items;
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text ?? "";
+    return div.innerHTML;
+  }
+
+  async function main() {
+    const boardsEl = document.getElementById("boards");
+    const updatedEl = document.getElementById("updated-at");
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data, error } = await client
+      .from("leaderboard_snapshot")
+      .select("*")
+      .order("category", { ascending: true })
+      .order("rank", { ascending: true });
+
+    if (error) {
+      updatedEl.textContent = "리더보드를 불러오지 못했습니다.";
+      console.error(error);
+      return;
+    }
+
+    const byCategory = {};
+    let latest = null;
+    for (const row of data ?? []) {
+      (byCategory[row.category] ??= []).push(row);
+      if (!latest || row.computed_at > latest) latest = row.computed_at;
+    }
+
+    updatedEl.textContent = latest
+      ? `마지막 갱신: ${new Date(latest).toLocaleString("ko-KR")}`
+      : "아직 갱신된 데이터가 없습니다.";
+
+    const topLevelRows = byCategory["top_level_monster"] || [];
+    const boardsHtml = [
+      `<section class="board wide">
+         <h2>👑 최고 레벨 몬스터</h2>
+         <p class="desc">플레이어별 보유 몬스터 중 가장 레벨이 높은 한 마리</p>
+         ${renderTopLevelBoard(topLevelRows)}
+       </section>`,
+      ...CATEGORIES.map(
+        (cat) => `
+        <section class="board">
+          <h2>${cat.title}</h2>
+          <p class="desc">${cat.desc}</p>
+          ${renderSimpleBoard(byCategory[cat.key] || [], cat.unit)}
+        </section>`,
+      ),
+    ].join("");
+
+    boardsEl.innerHTML = boardsHtml;
+  }
+
+  main();
+</script>
+</body>
+</html>
